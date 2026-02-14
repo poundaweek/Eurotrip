@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Europe 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #0c0e12; color: #e0ddd6; font-family: 'Instrument Serif', Georgia, serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tabs { scrollbar-width: none; }
+
+.header { border-bottom: 1px solid #1a1d24; padding: 32px 20px 20px; }
+.header-inner { max-width: 680px; margin: 0 auto; }
+.header h1 { font-family: ‘Instrument Serif’, Georgia, serif; font-size: 32px; font-weight: 400; letter-spacing: -0.8px; color: #f0ede6; }
+.header .sub { font-family: ‘Outfit’, sans-serif; font-size: 13px; font-weight: 300; color: #555; margin-top: 4px; letter-spacing: 0.2px; }
+
+.tabs { position: sticky; top: 0; z-index: 10; background: #0c0e12ee; backdrop-filter: blur(10px); border-bottom: 1px solid #1a1d24; overflow-x: auto; }
+.tabs-inner { max-width: 680px; margin: 0 auto; display: flex; gap: 2px; }
+.tab-btn { flex: 0 0 auto; background: transparent; border: none; border-bottom: 2px solid transparent; padding: 12px 16px 10px; font-family: ‘Outfit’, sans-serif; font-size: 13px; font-weight: 300; color: #4a4a4a; cursor: pointer; transition: all 0.2s; white-space: nowrap; letter-spacing: 0.3px; }
+.tab-btn.active { font-weight: 500; }
+
+.content { max-width: 680px; margin: 0 auto; padding: 24px 20px 80px; }
+.phase-title { font-family: ‘Instrument Serif’, Georgia, serif; font-size: 26px; font-weight: 400; letter-spacing: -0.5px; }
+.phase-meta { font-family: ‘Outfit’, sans-serif; font-size: 12px; font-weight: 300; color: #4a4a4a; margin-top: 2px; letter-spacing: 0.3px; }
+.phase-summary { font-family: ‘Outfit’, sans-serif; font-size: 13.5px; font-weight: 300; line-height: 1.7; color: #777; margin-top: 10px; }
+
+.cat { background: #10131a; border: 1px solid #1a1d24; border-radius: 12px; overflow: hidden; transition: all 0.2s; margin-bottom: 8px; }
+.cat.open { background: #12151b; }
+.cat-header { padding: 14px 18px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.cat-left { display: flex; align-items: center; gap: 12px; }
+.cat-icon { font-size: 16px; }
+.cat-label { font-family: ‘Outfit’, sans-serif; font-size: 14px; font-weight: 500; color: #ccc; letter-spacing: 0.2px; }
+.cat-count { font-family: ‘Outfit’, sans-serif; font-size: 11px; font-weight: 300; color: #444; }
+.cat-arrow { font-size: 12px; color: #444; transition: transform 0.2s; }
+.cat.open .cat-arrow { transform: rotate(180deg); }
+.cat-body { padding: 2px 18px 14px; display: none; }
+.cat.open .cat-body { display: block; }
+
+.item { padding: 10px 0; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.item + .item { border-top: 1px solid #161a22; }
+.item:first-child { border-top: 1px solid transparent; }
+.item-text { flex: 1; min-width: 0; }
+.item-name { font-family: ‘Outfit’, sans-serif; font-size: 13px; font-weight: 500; color: #d4d0c8; margin-bottom: 2px; }
+.item-desc { font-family: ‘Outfit’, sans-serif; font-size: 12px; font-weight: 300; line-height: 1.5; color: #666; }
+.item-link { flex: 0 0 auto; font-family: ‘Outfit’, sans-serif; font-size: 10px; font-weight: 400; letter-spacing: 0.8px; opacity: 0.7; padding: 3px 8px; border-radius: 4px; white-space: nowrap; margin-top: 1px; transition: opacity 0.15s; }
+.item-link:hover { opacity: 1; }
+
+.note { margin-top: 20px; padding: 16px 18px; border-radius: 12px; }
+.note p { font-family: ‘Outfit’, sans-serif; font-size: 13px; font-weight: 300; line-height: 1.7; color: #777; }
+</style>
+
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <h1>Europe, 2027</h1>
+    <p class="sub">May 23 – Jul 3 · ~40 nights · France → Spain → Portugal → Italy → Greece</p>
+  </div>
+</div>
+
+<div class="tabs">
+  <div class="tabs-inner" id="tabs"></div>
+</div>
+
+<div class="content" id="content"></div>
+
+<script>
+const PHASES = [
+  {
+    phase: "France", emoji: "🇫🇷", color: "#7c5cbf", accent: "#c9b3f0",
+    dates: "May 24 – 28", nights: "~4 nights",
+    summary: "CDG is your layover anyway — start here. Côte d'Azur, medieval hill villages, and the Gorges du Verdon.",
+    categories: [
+      { label: "History & Culture", icon: "🏛️", items: [
+        { name: "Vieux Nice", desc: "Baroque old town, Cours Saleya flower market, socca street food.", link: "https://www.lonelyplanet.com/france/nice" },
+        { name: "Èze village", desc: "Cliffside medieval village with exotic gardens and panoramic sea views.", link: "https://www.eze-tourisme.com/en" },
+        { name: "Monaco", desc: "Monte Carlo, Prince's Palace, Oceanographic Museum. 20min train from Nice.", link: "https://www.visitmonaco.com/en" },
+        { name: "Aix-en-Provence", desc: "Cézanne's city. Tree-lined boulevards, fountains, Provençal markets.", link: "https://www.lonelyplanet.com/france/aix-en-provence" },
+        { name: "Paris stopover", desc: "If your CDG layover is 8+ hours, squeeze in a quick city loop.", link: "https://www.lonelyplanet.com/france/paris" },
+      ]},
+      { label: "Beaches", icon: "🏖️", items: [
+        { name: "Promenade des Anglais, Nice", desc: "Iconic seafront. Swim off the pebbly beach, rosé in hand.", link: "https://www.lonelyplanet.com/france/nice/attractions/promenade-des-anglais" },
+        { name: "Villefranche-sur-Mer", desc: "Prettiest bay on the Riviera. 10min train from Nice.", link: "https://www.lonelyplanet.com/france/villefranche-sur-mer" },
+        { name: "Moustiers-Sainte-Marie", desc: "Cliffside village above the Verdon. Gateway to Lac de Sainte-Croix.", link: "https://www.verdontourisme.com/en" },
+      ]},
+      { label: "Hiking & Nature", icon: "🥾", items: [
+        { name: "Gorges du Verdon — Blanc-Martel Trail", desc: "Europe's Grand Canyon. 15km through tunnels and cliff edges. Full day.", link: "https://www.ultimatefrance.com/hiking/south-france/gorges-du-verdon" },
+        { name: "Gorges du Verdon — Route des Crêtes", desc: "14 viewpoints by car with short walks. More accessible alternative.", link: "https://www.alltrails.com/parks/france/alpes-de-haute-provence/parc-naturel-regional-du-verdon" },
+        { name: "Calanques National Park", desc: "Fjord-like inlets near Marseille. Hike to Calanque d'En-Vau (~3hrs).", link: "https://www.calanques-parcnational.fr/en" },
+        { name: "Nietzsche Path (Èze → Villefranche)", desc: "Steep coastal descent. Named after the philosopher who walked it daily.", link: "https://www.alltrails.com/trail/france/alpes-maritimes/chemin-de-nietzsche" },
+      ]},
+      { label: "Getting Around", icon: "✈️", items: [
+        { name: "SYD → CDG → Nice", desc: "Fly on to Nice (~1.5hrs) or TGV south (~5.5hrs).", link: "https://www.google.com/travel/flights" },
+        { name: "Rent car from Nice", desc: "Essential for Verdon and Provence. Drop back in Nice before flying out.", link: "https://www.discovercars.com" },
+        { name: "Nice → Barcelona", desc: "~1.5hr flight. Vueling, easyJet, Ryanair.", link: "https://www.google.com/travel/flights" },
+      ]},
+    ]
+  },
+  {
+    phase: "Spain", emoji: "🇪🇸", color: "#c9652b", accent: "#f0c27a",
+    dates: "May 28 – Jun 3", nights: "~6 nights",
+    summary: "Gaudí in Barcelona, Moorish palaces and flamenco in Seville. Late May keeps Seville at 28°C instead of 35°C+.",
+    categories: [
+      { label: "History & Culture", icon: "🏛️", items: [
+        { name: "Sagrada Familia", desc: "Book timed tickets 2–3 weeks ahead. Morning light through the stained glass.", link: "https://sagradafamilia.org/en/tickets" },
+        { name: "Park Güell", desc: "Gaudí's mosaic-covered hilltop park. Go early to beat crowds.", link: "https://parkguell.barcelona/en" },
+        { name: "Gothic Quarter", desc: "Medieval labyrinth. Hidden squares, street musicians, Cathedral.", link: "https://www.lonelyplanet.com/spain/barcelona/barri-gotic-and-la-rambla" },
+        { name: "Real Alcázar, Seville", desc: "Mudéjar palace that rivals the Alhambra. GoT filming location.", link: "https://www.alcazarsevilla.org/?lang=en" },
+        { name: "Plaza de España, Seville", desc: "Monumental tiled plaza. Row a boat in the canal.", link: "https://www.lonelyplanet.com/spain/seville/attractions/plaza-de-espana/a/poi-sig/1176066/355561" },
+        { name: "Flamenco show", desc: "Intimate tablao in Seville. Try La Casa del Flamenco.", link: "https://www.lacasadelflamenco.com" },
+        { name: "Alhambra, Granada (day trip)", desc: "Book months ahead. Nasrid Palaces are transcendent. ~2.5hrs from Seville.", link: "https://www.alhambra-patronato.es/en" },
+        { name: "Mezquita, Córdoba (day trip)", desc: "Forest of red-and-white arches. ~45min train from Seville.", link: "https://mezquita-catedraldecordoba.es/en/" },
+      ]},
+      { label: "Beaches & Food", icon: "🏖️", items: [
+        { name: "Barceloneta Beach", desc: "City beach for afternoon swims. Great chiringuitos (beach bars).", link: "https://www.barcelona.cat/en/what-to-do-in-bcn/barceloneta-beach" },
+        { name: "Tapas in Triana, Seville", desc: "Cross the bridge for the most authentic tapas bars and Mercado de Triana.", link: "https://www.lonelyplanet.com/spain/seville/narratives/neighbourhood-guide/triana" },
+        { name: "La Boqueria Market", desc: "Iconic Barcelona food market. Go before 11am.", link: "https://www.boqueria.barcelona/en" },
+      ]},
+      { label: "Hiking & Nature", icon: "🥾", items: [
+        { name: "Montserrat", desc: "Jagged mountain monastery 1hr from Barcelona. Cable car up, hike Sant Joan.", link: "https://www.montserratvisita.com/en" },
+        { name: "Bunkers del Carmel", desc: "Civil war lookout with the best 360° view of Barcelona. Locals' sunset spot.", link: "https://www.timeout.com/barcelona/attractions/bunkers-del-carmel" },
+      ]},
+      { label: "Getting Around", icon: "🚄", items: [
+        { name: "Barcelona → Seville", desc: "Fly (~2hrs, Vueling) or AVE train (~5.5hrs).", link: "https://www.renfe.com/es/en" },
+        { name: "Seville → Lisbon", desc: "Bus ~7hrs (Flixbus). Night bus saves a hotel night.", link: "https://www.google.com/travel/flights" },
+      ]},
+    ]
+  },
+  {
+    phase: "Portugal", emoji: "🇵🇹", color: "#1a8a6e", accent: "#7edcb5",
+    dates: "Jun 3 – 8", nights: "~5 nights",
+    summary: "Lisbon's fado and tiles, fairy-tale Sintra, and the Algarve's golden cliffs and sea caves.",
+    categories: [
+      { label: "History & Culture", icon: "🏛️", items: [
+        { name: "Alfama + Fado dinner", desc: "Lisbon's oldest neighbourhood. Live fado in tiny candlelit tavernas.", link: "https://www.lonelyplanet.com/portugal/lisbon/narratives/neighbourhood-guide/alfama-castelo-and-graca" },
+        { name: "Belém Tower & Jerónimos Monastery", desc: "Manueline masterpieces. Custard tarts at Pastéis de Belém next door.", link: "https://www.lonelyplanet.com/portugal/lisbon/attractions/torre-de-belem/a/poi-sig/1165182/355188" },
+        { name: "Pena Palace, Sintra", desc: "Psychedelic hilltop palace. Book timed entry online.", link: "https://www.parquesdesintra.pt/en/parks-and-monuments/park-and-national-palace-of-pena/" },
+        { name: "Quinta da Regaleira", desc: "Gothic estate with the Initiation Well — spiral staircase into the earth.", link: "https://www.regaleira.pt/en" },
+        { name: "Miradouros of Lisbon", desc: "Graça and Senhora do Monte for the best rooftop sunset views.", link: "https://www.lonelyplanet.com/portugal/lisbon/attractions/miradouro-da-graca" },
+      ]},
+      { label: "Beaches", icon: "🏖️", items: [
+        { name: "Praia da Marinha", desc: "Golden cliffs, turquoise water. Regularly voted Europe's best beach.", link: "https://www.visitportugal.com/en/content/praia-da-marinha" },
+        { name: "Ponta da Piedade, Lagos", desc: "Sea stacks and grottoes. Boat tour or clifftop walk.", link: "https://www.earthtrekkers.com/best-things-to-do-in-lagos-portugal/" },
+        { name: "Benagil Sea Cave", desc: "Famous dome cave by kayak or SUP. Only accessible from the water.", link: "https://www.lonelyplanet.com/portugal/the-algarve/attractions/benagil-sea-cave" },
+      ]},
+      { label: "Hiking & Nature", icon: "🥾", items: [
+        { name: "Seven Hanging Valleys Trail", desc: "11.4km Algarve cliff walk past sea stacks, hidden beaches, and Benagil from above.", link: "https://www.alltrails.com/trail/portugal/faro/seven-hanging-valleys-trail" },
+        { name: "Rota Vicentina (Fishermen's Trail)", desc: "Wild Atlantic coastal cliffs. Do a day section from Aljezur.", link: "https://rotavicentina.com/en/" },
+        { name: "Sintra–Cascais forest walks", desc: "Mossy trails connecting palaces. Magical atmosphere.", link: "https://www.alltrails.com/parks/portugal/lisbon/parque-natural-de-sintra-cascais" },
+      ]},
+      { label: "Getting Around", icon: "✈️", items: [
+        { name: "Algarve by car", desc: "Rent from Faro. Essential for cliff beaches.", link: "https://www.discovercars.com" },
+        { name: "Algarve → Lisbon", desc: "Train ~3hrs or drive and drop car.", link: "https://www.cp.pt/passageiros/en" },
+        { name: "Lisbon → Rome", desc: "Direct ~3hrs. TAP, Ryanair, Wizz. The one repositioning flight.", link: "https://www.google.com/travel/flights" },
+      ]},
+    ]
+  },
+  {
+    phase: "Italy South", emoji: "🇮🇹", color: "#b83b2e", accent: "#f5a8a0",
+    dates: "Jun 8 – 16", nights: "~8 nights",
+    summary: "Rome's ruins, Amalfi Coast cliffs and the Path of the Gods, Pompeii, and Neapolitan pizza.",
+    categories: [
+      { label: "History & Culture", icon: "🏛️", items: [
+        { name: "Colosseum & Roman Forum", desc: "Skip-the-line ticket. Go at 8:30am opening.", link: "https://www.coopculture.it/en/colosseo-e-shop.cfm" },
+        { name: "Vatican Museums & Sistine Chapel", desc: "Book online. Friday evenings are less crowded.", link: "https://www.museivaticani.va/content/museivaticani/en.html" },
+        { name: "Pantheon", desc: "Best-preserved Roman building. Free entry. The oculus is magical.", link: "https://www.pantheonroma.com/en" },
+        { name: "Trastevere", desc: "Cobblestones, ivy, trattorias. Rome's best dinner neighbourhood.", link: "https://www.lonelyplanet.com/italy/rome/trastevere-and-gianicolo" },
+        { name: "Pompeii", desc: "Frozen-in-time Roman city. Allow 3–4hrs.", link: "https://www.pompeiisites.org/en/" },
+        { name: "Naples Archaeological Museum", desc: "Best Pompeii finds, mosaics, the Secret Cabinet.", link: "https://mann-napoli.it/en/" },
+        { name: "Ravello", desc: "Villa Rufolo and Villa Cimbrone gardens with vertigo-inducing views.", link: "https://www.villarufolo.com/en/" },
+        { name: "Positano", desc: "The cascading-pastel-houses icon. Wander, swim, eat.", link: "https://www.lonelyplanet.com/italy/positano" },
+      ]},
+      { label: "Beaches & Food", icon: "🏖️", items: [
+        { name: "Positano beach", desc: "Grey-sand beach below the village. Loungers or swim off the rocks.", link: "https://www.lonelyplanet.com/italy/positano" },
+        { name: "Capri day trip", desc: "Blue Grotto, chairlift to Monte Solaro. Ferry from Amalfi/Positano.", link: "https://www.capritourism.com/en" },
+        { name: "Pizza in Naples", desc: "Da Michele or Sorbillo. Margherita in its birthplace.", link: "https://www.lonelyplanet.com/italy/naples" },
+      ]},
+      { label: "Hiking & Nature", icon: "🥾", items: [
+        { name: "Path of the Gods", desc: "7km cliffside trail, 630m above the sea. 3hrs. The must-do.", link: "https://www.lonelyplanet.com/articles/hike-path-of-the-gods-amalfi-coast" },
+        { name: "Ravello → Amalfi hike", desc: "Downhill through lemon groves. Less crowded alternative.", link: "https://www.earthtrekkers.com/path-of-the-gods-hike/" },
+        { name: "Valle delle Ferriere", desc: "Waterfall nature reserve with rare subtropical plants.", link: "https://www.amalficoast.com/en/amalfi-coast-hiking-trails" },
+      ]},
+      { label: "Getting Around", icon: "🚂", items: [
+        { name: "Rome → Amalfi Coast", desc: "Train to Naples (~1hr), ferry to Positano (~1hr).", link: "https://www.trenitalia.com/en.html" },
+        { name: "Amalfi Coast ferries", desc: "Between towns — scenic and avoids the hair-raising buses.", link: "https://www.travelamalfi.com/en/getting-around" },
+        { name: "Naples → Florence", desc: "Frecciarossa ~3hrs.", link: "https://www.trenitalia.com/en.html" },
+      ]},
+    ]
+  },
+  {
+    phase: "North Italy + Dolomites", emoji: "⛰️", color: "#2d7a35", accent: "#8fd69a",
+    dates: "Jun 16 – 25", nights: "~9 nights",
+    summary: "Florence, Cinque Terre, then the Dolomites timed for the Jun 20+ sweet spot — rifugios open, wildflowers, no crowds.",
+    note: { color: "#8fd69a", bg: "#0e120e", border: "#2d7a3533", text: '<span style="color:#8fd69a;font-weight:500">Jun 21–25</span> — rifugios just opened, wildflowers blooming, trails clear, no crowds. Base in Val Gardena or Cortina. Car essential.' },
+    categories: [
+      { label: "History & Culture", icon: "🏛️", items: [
+        { name: "Uffizi Gallery", desc: "Botticelli, Raphael, Caravaggio. Book timed entry ahead.", link: "https://www.uffizi.it/en/the-uffizi" },
+        { name: "Brunelleschi's Dome", desc: "463 steps. Book the climb separately.", link: "https://duomo.firenze.it/en/home" },
+        { name: "Oltrarno", desc: "Cross the Ponte Vecchio — leather workshops, goldsmiths, quiet trattorias.", link: "https://www.lonelyplanet.com/italy/florence/oltrarno" },
+        { name: "San Gimignano day trip", desc: "Medieval towers, world-class gelato. 1hr from Florence.", link: "https://www.sangimignano.com/en/" },
+        { name: "Siena day trip", desc: "Piazza del Campo, Gothic cathedral, Chianti wine country en route.", link: "https://www.terresiena.it/en" },
+      ]},
+      { label: "Beaches & Relaxation", icon: "🏖️", items: [
+        { name: "Monterosso beach", desc: "Only proper sandy beach in Cinque Terre.", link: "https://www.cinqueterre.eu.com/en/monterosso" },
+        { name: "Manarola sunset", desc: "Most photographed village. Wine on the rocks at golden hour.", link: "https://www.cinqueterre.eu.com/en/manarola" },
+        { name: "Piazzale Michelangelo", desc: "Florence skyline panorama. Bring a bottle.", link: "https://www.lonelyplanet.com/italy/florence/attractions/piazzale-michelangelo" },
+        { name: "Rifugio dining", desc: "Mountain hut lunches — fresh pasta, strudel, Dolomite panoramas.", link: "https://huttohuthikingdolomites.com/blog/dolomites-in-june" },
+      ]},
+      { label: "Hiking & Nature", icon: "🥾", items: [
+        { name: "Cinque Terre Blue Trail", desc: "Connect all 5 villages on foot. ~12km total, or do sections.", link: "https://www.cinqueterre.eu.com/en/cinque-terre-hiking" },
+        { name: "Tre Cime di Lavaredo circuit", desc: "The iconic 10km loop. Moderate, 3–4hrs. Most famous Dolomites hike.", link: "https://www.moonhoneytravel.com/best-time-to-visit-the-dolomites/" },
+        { name: "Seceda ridgeline", desc: "Cable car to 2,500m, walk the razor-edge. Jaw-dropping.", link: "https://huttohuthikingdolomites.com/blog/best-time-to-visit-the-dolomites-guide" },
+        { name: "Alpe di Siusi", desc: "Europe's largest alpine plateau. Meadows, wildflowers, Sassolungo views.", link: "https://www.moonhoneytravel.com/best-time-to-visit-the-dolomites/" },
+        { name: "Lago di Braies", desc: "Turquoise glacial lake. Shoreline walk or rent a rowing boat. Go early.", link: "https://huttohuthikingdolomites.com/blog/dolomites-in-june" },
+        { name: "Lago di Sorapis", desc: "Milky-turquoise lake at 1,925m. ~5hr return. Moderate-hard.", link: "https://www.earthtrekkers.com/how-to-plan-a-trip-to-the-dolomites/" },
+        { name: "Puez-Odle traverse", desc: "Full-day high plateau through lunar landscape. For experienced hikers.", link: "https://www.moonhoneytravel.com/best-time-to-visit-the-dolomites/" },
+      ]},
+      { label: "Getting Around", icon: "🚗", items: [
+        { name: "Florence → Cinque Terre", desc: "Train to La Spezia (~2.5hrs), then local train between villages.", link: "https://www.trenitalia.com/en.html" },
+        { name: "Dolomites by car", desc: "Essential. Base in Val Gardena or Cortina.", link: "https://www.earthtrekkers.com/how-to-plan-a-trip-to-the-dolomites/" },
+        { name: "Dolomites → Athens", desc: "Drive to Venice (~2hrs), fly to Athens (~2.5hrs).", link: "https://www.google.com/travel/flights" },
+        { name: "Rifugio & cable car season", desc: "Open ~Jun 20. Check conditions before going.", link: "https://monttrekking.com/info/hiking_season_dolomites.php" },
+      ]},
+    ]
+  },
+  {
+    phase: "Greece", emoji: "🇬🇷", color: "#1a6a9e", accent: "#7ec8f0",
+    dates: "Jun 25 – Jul 3", nights: "~8 nights",
+    summary: "Wind down in Athens then island-hop to Naxos and Milos. Late June is warmer but still great — and Athens is the cheapest hub home to Sydney.",
+    note: { color: "#7ec8f0", bg: "#0c1018", border: "#1a6a9e33", text: '<span style="color:#7ec8f0;font-weight:500">Flights home</span> — Athens → SYD via Doha or Dubai is often the cheapest route back to Australia. No backtracking needed.' },
+    categories: [
+      { label: "History & Culture", icon: "🏛️", items: [
+        { name: "Acropolis & Parthenon", desc: "Go at 8am opening to beat crowds and heat.", link: "https://www.lonelyplanet.com/greece/athens/attractions/acropolis/a/poi-sig/403163/360677" },
+        { name: "Ancient Agora", desc: "Where Socrates debated. Best-preserved temple in Greece.", link: "https://www.earthtrekkers.com/ancient-agora-athens/" },
+        { name: "Portara, Naxos", desc: "Massive marble doorway on an islet. Iconic sunset.", link: "https://santorinidave.com/best-greek-islands" },
+        { name: "Halki & Apiranthos, Naxos", desc: "Marble-paved mountain villages. Distillery tastings, traditional tavernas.", link: "https://www.naxos.gr/en/villages/" },
+        { name: "Plaka, Athens", desc: "Oldest neighbourhood below the Acropolis. Dinner here.", link: "https://www.lonelyplanet.com/greece/athens/neighbourhoods/plaka/a/nar/fd1b5ba1-e4bc-4aa0-87c4-afbb37abb52e/360677" },
+        { name: "Klima fishing village, Milos", desc: "Colourful boat garages carved into cliffs.", link: "https://finduslost.com/greek-islands-how-to-choose-which-to-visit/" },
+      ]},
+      { label: "Beaches", icon: "🏖️", items: [
+        { name: "Sarakiniko, Milos", desc: "Lunar white rock meeting turquoise water.", link: "https://www.greecetravelsecrets.com/greek-islands-for-couples/" },
+        { name: "Plaka Beach, Naxos", desc: "Best beach in the Cyclades. Long, sandy, uncrowded.", link: "https://santorinidave.com/best-greek-islands" },
+        { name: "Firiplaka, Milos", desc: "Volcanic cliffs behind a sheltered bay.", link: "https://finduslost.com/greek-islands-how-to-choose-which-to-visit/" },
+        { name: "Agios Prokopios, Naxos", desc: "Shallow turquoise water. Walking distance from town.", link: "https://www.naxos.gr/en/beaches/" },
+        { name: "Kleftiko boat tour, Milos", desc: "Pirate caves, rock arches, snorkelling. Only by boat.", link: "https://www.packthesuitcases.com/best-greek-islands-for-couples/" },
+      ]},
+      { label: "Hiking & Nature", icon: "🥾", items: [
+        { name: "Mt Zeus, Naxos (1,004m)", desc: "Highest peak in the Cyclades. 3–4hr return. Start early for heat.", link: "https://www.alltrails.com/trail/greece/south-aegean/mount-zeus-via-filoti" },
+        { name: "Filopappou Hill, Athens", desc: "20min walk for the best Acropolis view at golden hour.", link: "https://www.lonelyplanet.com/greece/athens/attractions/filopappou-hill/a/poi-sig/403166/360677" },
+      ]},
+      { label: "Getting Around", icon: "🚢", items: [
+        { name: "Athens → Naxos", desc: "~3.5hrs high-speed ferry. Book 2–4 weeks ahead.", link: "https://www.ferryhopper.com" },
+        { name: "Naxos → Milos", desc: "~2.5hrs high-speed ferry.", link: "https://www.ferryhopper.com" },
+        { name: "Milos → Athens", desc: "Fly (~45min) or ferry (~3.5hrs). Buffer time before international flight.", link: "https://www.ferryhopper.com" },
+        { name: "Athens → Sydney", desc: "Via Doha/Dubai. Often cheapest route back to Australia.", link: "https://www.google.com/travel/flights" },
+      ]},
+    ]
+  }
+];
+
+let activeTab = 0;
+
+function render() {
+  const tabsEl = document.getElementById('tabs');
+  const contentEl = document.getElementById('content');
+  const p = PHASES[activeTab];
+
+  tabsEl.innerHTML = PHASES.map((ph, i) => 
+    `<button class="tab-btn${i === activeTab ? ' active' : ''}" data-i="${i}" style="${i === activeTab ? `border-bottom-color:${ph.accent};color:${ph.accent}` : ''}">${ph.emoji} ${ph.phase}</button>`
+  ).join('');
+
+  let html = `
+    <div style="margin-bottom:24px">
+      <h2 class="phase-title" style="color:${p.accent}">${p.phase}</h2>
+      <p class="phase-meta">${p.nights} · ${p.dates}</p>
+      <p class="phase-summary">${p.summary}</p>
+    </div>
+  `;
+
+  p.categories.forEach((cat, ci) => {
+    const id = `cat-${activeTab}-${ci}`;
+    html += `
+      <div class="cat" id="${id}">
+        <div class="cat-header" data-id="${id}">
+          <div class="cat-left">
+            <span class="cat-icon">${cat.icon}</span>
+            <span class="cat-label">${cat.label}</span>
+            <span class="cat-count">${cat.items.length}</span>
+          </div>
+          <span class="cat-arrow">▾</span>
+        </div>
+        <div class="cat-body">
+          ${cat.items.map((item, ii) => `
+            <div class="item" style="${ii === 0 ? `border-top:1px solid ${p.color}22` : ''}">
+              <div class="item-text">
+                <p class="item-name">${item.name}</p>
+                <p class="item-desc">${item.desc}</p>
+              </div>
+              <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="item-link" style="color:${p.accent};border-color:${p.color}33">link ↗</a>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  });
+
+  if (p.note) {
+    html += `<div class="note" style="background:${p.note.bg};border:1px solid ${p.note.border}"><p>${p.note.text}</p></div>`;
+  }
+
+  contentEl.innerHTML = html;
+
+  tabsEl.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => { activeTab = parseInt(btn.dataset.i); render(); });
+  });
+
+  contentEl.querySelectorAll('.cat-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const cat = document.getElementById(header.dataset.id);
+      cat.classList.toggle('open');
+      if (cat.classList.contains('open')) {
+        cat.style.borderColor = p.color + '55';
+      } else {
+        cat.style.borderColor = '#1a1d24';
+      }
+    });
+  });
+}
+
+render();
+</script>
+
+</body>
+</html>
